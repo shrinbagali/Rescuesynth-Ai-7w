@@ -63,6 +63,14 @@ export interface TrainingMetrics {
   }[];
 }
 
+export interface GenerationSession {
+  id: string;
+  timestamp: Date;
+  config: ScenarioConfig;
+  scenarioCount: number;
+  insights: AIInsight[];
+}
+
 export type Page = 
   | 'dashboard'
   | 'generate'

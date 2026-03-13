@@ -1,4 +1,4 @@
-import { ScenarioConfig, ScenarioData, RiskLevel, RescuePriority, AIInsight } from '../types';
+import { ScenarioConfig, ScenarioData, RiskLevel, RescuePriority, AIInsight } from './types';
 
 export const generateScenarioData = (config: ScenarioConfig, count: number = 100): ScenarioData[] => {
   const scenarios: ScenarioData[] = [];

@@ -1,4 +1,4 @@
-import { HistoricalDisaster } from '../types';
+import { HistoricalDisaster } from './types';
 
 export const historicalDisasters: HistoricalDisaster[] = [
   {
