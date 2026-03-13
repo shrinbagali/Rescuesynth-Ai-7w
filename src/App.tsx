@@ -10,7 +10,8 @@ import DisasterMap from './pages/DisasterMap';
 import ScenarioHistory from './pages/ScenarioHistory';
 import RealTimeDetection from './pages/RealTimeDetection';
 import LiveMonitoring from './pages/LiveMonitoring';
-import { Page, ScenarioData, AIInsight, TrainingMetrics, DetectionResult, DisasterAlert } from './types';
+import ImageDetection from './pages/ImageDetection';
+import { Page, ScenarioData, AIInsight, TrainingMetrics, DetectionResult, DisasterAlert, ImageAnalysisResult } from './types';
 
 function App() {
   const [currentPage, setCurrentPage] = useState<Page>('dashboard');
@@ -25,6 +26,7 @@ function App() {
   }[]>([]);
   const [detectionHistory, setDetectionHistory] = useState<DetectionResult[]>([]);
   const [alertHistory, setAlertHistory] = useState<DisasterAlert[]>([]);
+  const [imageAnalysisHistory, setImageAnalysisHistory] = useState<ImageAnalysisResult[]>([]);
 
   const handleScenariosGenerated = (newScenarios: ScenarioData[], newInsights: AIInsight[]) => {
     setScenarios(newScenarios);
@@ -48,6 +50,10 @@ function App() {
     setAlertHistory(prev => [alert, ...prev]);
   };
 
+  const handleImageAnalysisComplete = (result: ImageAnalysisResult) => {
+    setImageAnalysisHistory(prev => [result, ...prev]);
+  };
+
   const renderPage = () => {
     switch (currentPage) {
       case 'dashboard':
@@ -57,6 +63,7 @@ function App() {
             insights={insights}
             trainingMetrics={trainingMetrics}
             historyCount={scenarioHistory.length}
+            imageAnalysisHistory={imageAnalysisHistory}
           />
         );
       case 'livemonitoring':
@@ -91,8 +98,15 @@ function App() {
         return <DisasterMap />;
       case 'history':
         return <ScenarioHistory history={scenarioHistory} />;
+      case 'imagedetection':
+        return (
+          <ImageDetection 
+            onAnalysisComplete={handleImageAnalysisComplete}
+            analysisHistory={imageAnalysisHistory}
+          />
+        );
       default:
-        return <Dashboard scenarios={scenarios} insights={insights} trainingMetrics={trainingMetrics} historyCount={scenarioHistory.length} />;
+        return <Dashboard scenarios={scenarios} insights={insights} trainingMetrics={trainingMetrics} historyCount={scenarioHistory.length} imageAnalysisHistory={imageAnalysisHistory} />;
     }
   };
 

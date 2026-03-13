@@ -72,7 +72,8 @@ export type Page =
   | 'map'
   | 'history'
   | 'realtime'
-  | 'livemonitoring';
+  | 'livemonitoring'
+  | 'imagedetection';
 
 export type DetectionRegion = 
   | 'Kerala Coastal Region'
@@ -223,4 +224,29 @@ export interface RescueRecommendation {
   resources: string[];
   evacuationZones: string[];
   timestamp: Date;
+}
+
+// Image-Based Disaster Detection Types
+export interface DetectedPattern {
+  pattern: string;
+  confidence: number;
+  description: string;
+}
+
+export interface ImageAnalysisResult {
+  id: string;
+  timestamp: Date;
+  disasterType: DisasterType | 'No Disaster Detected';
+  region: DetectionRegion;
+  detectedPatterns: DetectedPattern[];
+  overallConfidence: number;
+  riskLevel: DetectionRiskLevel;
+  recommendations: string[];
+  explanation: string;
+}
+
+export interface EnhancedDisasterAlert extends DisasterAlert {
+  imageAnalysisData?: ImageAnalysisResult;
+  detectedPatterns?: DetectedPattern[];
+  aiExplanation?: string;
 }

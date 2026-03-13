@@ -1,5 +1,5 @@
-import { Activity, MapPin, AlertTriangle, Brain, TrendingUp, Users, Zap, Shield } from 'lucide-react';
-import { ScenarioData, AIInsight, TrainingMetrics } from '../types';
+import { Activity, MapPin, AlertTriangle, Brain, TrendingUp, Users, Zap, Shield, Image } from 'lucide-react';
+import { ScenarioData, AIInsight, TrainingMetrics, ImageAnalysisResult } from '../types';
 import { historicalDisasters, getTotalPopulationAffected } from '../data/historicalDisasters';
 
 interface DashboardProps {
@@ -7,6 +7,7 @@ interface DashboardProps {
   insights: AIInsight[];
   trainingMetrics: TrainingMetrics | null;
   historyCount: number;
+  imageAnalysisHistory?: ImageAnalysisResult[];
 }
 
 interface StatCardProps {
@@ -35,9 +36,10 @@ function StatCard({ title, value, subtitle, icon, colorClass, glowClass }: StatC
   );
 }
 
-export default function Dashboard({ scenarios, insights, trainingMetrics, historyCount }: DashboardProps) {
+export default function Dashboard({ scenarios, insights, trainingMetrics, historyCount, imageAnalysisHistory = [] }: DashboardProps) {
   const highRiskCount = scenarios.filter(s => s.riskLevel === 'High').length;
   const totalPopulationAffected = getTotalPopulationAffected();
+  const highConfidenceAnalyses = imageAnalysisHistory.filter(a => a.overallConfidence > 70).length;
   
   const stats = [
     {
@@ -71,6 +73,14 @@ export default function Dashboard({ scenarios, insights, trainingMetrics, histor
       icon: <Brain size={24} className="text-neon-blue" />,
       colorClass: 'text-neon-blue',
       glowClass: '',
+    },
+    {
+      title: 'Image Analyses Performed',
+      value: imageAnalysisHistory.length || 0,
+      subtitle: `${highConfidenceAnalyses} high-confidence detections`,
+      icon: <Image size={24} className="text-neon-teal" />,
+      colorClass: 'text-neon-teal',
+      glowClass: 'glow-card-teal',
     },
   ];
 
