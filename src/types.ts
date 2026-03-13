@@ -70,4 +70,52 @@ export type Page =
   | 'training'
   | 'analytics'
   | 'map'
-  | 'history';
+  | 'history'
+  | 'realtime';
+
+export type DetectionRegion = 
+  | 'Kerala Coastal Region'
+  | 'Assam Flood Plains'
+  | 'Odisha Cyclone Belt'
+  | 'Uttarakhand Himalayan Zone'
+  | 'Himachal Mountain Region'
+  | 'Maharashtra Urban Region'
+  | 'Bengaluru Urban Region';
+
+export type WaterLevel = 'Low' | 'Medium' | 'High';
+export type SaturationLevel = 'Low' | 'Medium' | 'High';
+export type DrynessIndex = 'Low' | 'Medium' | 'High';
+export type DetectionRiskLevel = 'Low Risk' | 'Moderate Risk' | 'High Risk' | 'Severe Risk';
+
+export interface EnvironmentalInputs {
+  region: DetectionRegion;
+  rainfallIntensity: number;
+  waterLevel: WaterLevel;
+  windSpeed: number;
+  seismicActivity: number;
+  temperature: number;
+  soilSaturation: SaturationLevel;
+  vegetationDryness: DrynessIndex;
+}
+
+export interface DetectionResult {
+  id: string;
+  timestamp: Date;
+  disasterType: DisasterType | 'No Disaster Detected';
+  region: DetectionRegion;
+  riskLevel: DetectionRiskLevel;
+  riskScore: number;
+  environmentalConditions: EnvironmentalInputs;
+  explanation: string;
+  recommendation: string;
+}
+
+export interface RegionData {
+  name: DetectionRegion;
+  latitude: number;
+  longitude: number;
+  populationDensity: number;
+  infrastructureVulnerability: number;
+  historicalFrequency: number;
+  isMountainous: boolean;
+}

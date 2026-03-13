@@ -8,7 +8,8 @@ import AITraining from './pages/AITraining';
 import DisasterAnalytics from './pages/DisasterAnalytics';
 import DisasterMap from './pages/DisasterMap';
 import ScenarioHistory from './pages/ScenarioHistory';
-import { Page, ScenarioData, AIInsight, TrainingMetrics } from './types';
+import RealTimeDetection from './pages/RealTimeDetection';
+import { Page, ScenarioData, AIInsight, TrainingMetrics, DetectionResult } from './types';
 
 function App() {
   const [currentPage, setCurrentPage] = useState<Page>('dashboard');
@@ -21,6 +22,7 @@ function App() {
     config: string;
     scenarioCount: number;
   }[]>([]);
+  const [detectionHistory, setDetectionHistory] = useState<DetectionResult[]>([]);
 
   const handleScenariosGenerated = (newScenarios: ScenarioData[], newInsights: AIInsight[]) => {
     setScenarios(newScenarios);
@@ -36,6 +38,10 @@ function App() {
     ]);
   };
 
+  const handleDetectionComplete = (result: DetectionResult) => {
+    setDetectionHistory(prev => [result, ...prev]);
+  };
+
   const renderPage = () => {
     switch (currentPage) {
       case 'dashboard':
@@ -45,6 +51,13 @@ function App() {
             insights={insights}
             trainingMetrics={trainingMetrics}
             historyCount={scenarioHistory.length}
+          />
+        );
+      case 'realtime':
+        return (
+          <RealTimeDetection 
+            onDetectionComplete={handleDetectionComplete}
+            detectionHistory={detectionHistory}
           />
         );
       case 'generate':
