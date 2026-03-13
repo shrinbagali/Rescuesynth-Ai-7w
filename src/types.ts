@@ -175,3 +175,42 @@ export interface MonitoringEvent {
   environmentalData: MonitoringEnvironmentalData;
   timestamp: Date;
 }
+
+// AI Early Warning Types
+export interface EarlyWarningPrediction {
+  id: string;
+  region: MonitoringRegion;
+  predictedDisasterType: DisasterType;
+  confidenceScore: number;
+  estimatedTimeWindow: string;
+  trendAnalysis: {
+    parameter: string;
+    trend: 'increasing' | 'decreasing' | 'stable';
+    rate: number;
+  }[];
+  timestamp: Date;
+}
+
+// Timeline Replay Types
+export interface TimelineSnapshot {
+  id: string;
+  timestamp: Date;
+  regions: {
+    name: MonitoringRegion;
+    environmentalData: MonitoringEnvironmentalData;
+    status: MonitoringStatus;
+  }[];
+  alerts: DisasterAlert[];
+}
+
+// Rescue Recommendation Types
+export interface RescueRecommendation {
+  id: string;
+  disasterType: DisasterType;
+  region: MonitoringRegion;
+  priority: 'Low' | 'Medium' | 'High' | 'Critical';
+  actions: string[];
+  resources: string[];
+  evacuationZones: string[];
+  timestamp: Date;
+}
