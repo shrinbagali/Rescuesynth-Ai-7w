@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Brain, Play, CheckCircle, Loader2, BarChart3 } from 'lucide-react';
 import {
   Chart as ChartJS,
