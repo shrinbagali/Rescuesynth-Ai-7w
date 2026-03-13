@@ -143,6 +143,16 @@ export interface MonitoringEnvironmentalData {
   soilSaturation: number;
   drynessIndex: number;
   timestamp: Date;
+  // Earthquake-specific parameters
+  earthquakeDepth?: number;
+  groundAcceleration?: number;
+  epicenterLat?: number;
+  epicenterLng?: number;
+  // Cyclone-specific parameters
+  atmosphericPressure?: number;
+  seaSurfaceTemp?: number;
+  rainfallIntensity?: number;
+  cloudPattern?: 'none' | 'forming' | 'spiral' | 'eye';
 }
 
 export interface MonitoredRegion {
