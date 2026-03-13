@@ -12,6 +12,7 @@ import RealTimeDetection from './pages/RealTimeDetection';
 import LiveMonitoring from './pages/LiveMonitoring';
 import ImageDetection from './pages/ImageDetection';
 import AICommandCenter from './pages/AICommandCenter';
+import DualDisasterDetection from './pages/DualDisasterDetection';
 import { Page, ScenarioData, AIInsight, TrainingMetrics, DetectionResult, DisasterAlert, ImageAnalysisResult } from './types';
 
 function App() {
@@ -108,6 +109,8 @@ function App() {
         );
       case 'aicommandcenter':
         return <AICommandCenter />;
+      case 'dualdisasterdetection':
+        return <DualDisasterDetection />;
       default:
         return <Dashboard scenarios={scenarios} insights={insights} trainingMetrics={trainingMetrics} historyCount={scenarioHistory.length} imageAnalysisHistory={imageAnalysisHistory} />;
     }
