@@ -16,7 +16,7 @@ import {
   Play,
   RotateCcw
 } from 'lucide-react';
-import L from 'leaflet';
+import type { Map as LeafletMap, Marker, Circle } from 'leaflet';
 import { 
   EnvironmentalInputs, 
   DetectionResult, 
@@ -127,9 +127,9 @@ export default function RealTimeDetection({ onDetectionComplete, detectionHistor
   const [result, setResult] = useState<DetectionResult | null>(null);
   const [isDetecting, setIsDetecting] = useState(false);
   const mapRef = useRef<HTMLDivElement>(null);
-  const mapInstanceRef = useRef<L.Map | null>(null);
-  const markerRef = useRef<L.Marker | null>(null);
-  const circleRef = useRef<L.Circle | null>(null);
+  const mapInstanceRef = useRef<LeafletMap | null>(null);
+  const markerRef = useRef<Marker | null>(null);
+  const circleRef = useRef<Circle | null>(null);
 
   const getRegionData = (regionName: DetectionRegion): RegionData => {
     return REGIONS.find(r => r.name === regionName) || REGIONS[0];
@@ -330,9 +330,10 @@ export default function RealTimeDetection({ onDetectionComplete, detectionHistor
     setResult(null);
   };
 
-  const updateMap = (detection: DetectionResult) => {
+  const updateMap = async (detection: DetectionResult) => {
     if (!mapInstanceRef.current) return;
 
+    const L = await import('leaflet');
     const regionData = getRegionData(detection.region);
     
     // Remove existing marker and circle
@@ -425,35 +426,44 @@ export default function RealTimeDetection({ onDetectionComplete, detectionHistor
   useEffect(() => {
     if (!mapRef.current || mapInstanceRef.current) return;
 
-    const map = L.map(mapRef.current).setView([22.5, 82.5], 5);
-    mapInstanceRef.current = map;
+    const initMap = async () => {
+      const L = await import('leaflet');
+      await import('leaflet/dist/leaflet.css');
+      
+      if (!mapRef.current) return;
+      
+      const map = L.map(mapRef.current).setView([22.5, 82.5], 5);
+      mapInstanceRef.current = map;
 
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-      attribution: '&copy; OpenStreetMap, &copy; CartoDB',
-      maxZoom: 19,
-    }).addTo(map);
+      L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+        attribution: '&copy; OpenStreetMap, &copy; CartoDB',
+        maxZoom: 19,
+      }).addTo(map);
 
-    // Add region markers
-    REGIONS.forEach((region) => {
-      const markerIcon = L.divIcon({
-        className: 'region-marker',
-        html: `
-          <div style="
-            width: 12px;
-            height: 12px;
-            background: #64748b;
-            border: 2px solid #94a3b8;
-            border-radius: 50%;
-          "></div>
-        `,
-        iconSize: [12, 12],
-        iconAnchor: [6, 6],
+      // Add region markers
+      REGIONS.forEach((region) => {
+        const markerIcon = L.divIcon({
+          className: 'region-marker',
+          html: `
+            <div style="
+              width: 12px;
+              height: 12px;
+              background: #64748b;
+              border: 2px solid #94a3b8;
+              border-radius: 50%;
+            "></div>
+          `,
+          iconSize: [12, 12],
+          iconAnchor: [6, 6],
+        });
+
+        L.marker([region.latitude, region.longitude], { icon: markerIcon })
+          .bindTooltip(region.name, { permanent: false, direction: 'top' })
+          .addTo(map);
       });
+    };
 
-      L.marker([region.latitude, region.longitude], { icon: markerIcon })
-        .bindTooltip(region.name, { permanent: false, direction: 'top' })
-        .addTo(map);
-    });
+    initMap();
 
     return () => {
       if (mapInstanceRef.current) {
