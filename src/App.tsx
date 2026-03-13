@@ -9,7 +9,8 @@ import DisasterAnalytics from './pages/DisasterAnalytics';
 import DisasterMap from './pages/DisasterMap';
 import ScenarioHistory from './pages/ScenarioHistory';
 import RealTimeDetection from './pages/RealTimeDetection';
-import { Page, ScenarioData, AIInsight, TrainingMetrics, DetectionResult } from './types';
+import LiveMonitoring from './pages/LiveMonitoring';
+import { Page, ScenarioData, AIInsight, TrainingMetrics, DetectionResult, DisasterAlert } from './types';
 
 function App() {
   const [currentPage, setCurrentPage] = useState<Page>('dashboard');
@@ -23,6 +24,7 @@ function App() {
     scenarioCount: number;
   }[]>([]);
   const [detectionHistory, setDetectionHistory] = useState<DetectionResult[]>([]);
+  const [alertHistory, setAlertHistory] = useState<DisasterAlert[]>([]);
 
   const handleScenariosGenerated = (newScenarios: ScenarioData[], newInsights: AIInsight[]) => {
     setScenarios(newScenarios);
@@ -42,6 +44,10 @@ function App() {
     setDetectionHistory(prev => [result, ...prev]);
   };
 
+  const handleAlertTriggered = (alert: DisasterAlert) => {
+    setAlertHistory(prev => [alert, ...prev]);
+  };
+
   const renderPage = () => {
     switch (currentPage) {
       case 'dashboard':
@@ -51,6 +57,13 @@ function App() {
             insights={insights}
             trainingMetrics={trainingMetrics}
             historyCount={scenarioHistory.length}
+          />
+        );
+      case 'livemonitoring':
+        return (
+          <LiveMonitoring 
+            onAlertTriggered={handleAlertTriggered}
+            alertHistory={alertHistory}
           />
         );
       case 'realtime':

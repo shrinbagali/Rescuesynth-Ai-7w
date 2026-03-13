@@ -7,6 +7,7 @@ interface HeaderProps {
 
 const pageTitles: Record<Page, string> = {
   dashboard: 'Dashboard Overview',
+  livemonitoring: 'Live Disaster Monitoring',
   realtime: 'Real-Time Disaster Detection Engine',
   generate: 'Disaster Scenario Generator',
   dataset: 'Dataset Viewer',

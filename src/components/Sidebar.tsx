@@ -7,7 +7,8 @@ import {
   Globe, 
   History,
   Shield,
-  Activity
+  Activity,
+  Radio
 } from 'lucide-react';
 import { Page } from '../types';
 
@@ -18,6 +19,7 @@ interface SidebarProps {
 
 const menuItems: { id: Page; label: string; icon: React.ReactNode }[] = [
   { id: 'dashboard', label: 'Dashboard', icon: <LayoutDashboard size={20} /> },
+  { id: 'livemonitoring', label: 'Live Monitoring', icon: <Radio size={20} /> },
   { id: 'realtime', label: 'Real-Time Detection', icon: <Activity size={20} /> },
   { id: 'generate', label: 'Generate Scenario', icon: <Zap size={20} /> },
   { id: 'dataset', label: 'Dataset Viewer', icon: <Database size={20} /> },
