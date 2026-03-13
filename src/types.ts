@@ -73,7 +73,8 @@ export type Page =
   | 'history'
   | 'realtime'
   | 'livemonitoring'
-  | 'imagedetection';
+  | 'imagedetection'
+  | 'aicommandcenter';
 
 export type DetectionRegion = 
   | 'Kerala Coastal Region'

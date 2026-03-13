@@ -11,6 +11,7 @@ import ScenarioHistory from './pages/ScenarioHistory';
 import RealTimeDetection from './pages/RealTimeDetection';
 import LiveMonitoring from './pages/LiveMonitoring';
 import ImageDetection from './pages/ImageDetection';
+import AICommandCenter from './pages/AICommandCenter';
 import { Page, ScenarioData, AIInsight, TrainingMetrics, DetectionResult, DisasterAlert, ImageAnalysisResult } from './types';
 
 function App() {
@@ -105,6 +106,8 @@ function App() {
             analysisHistory={imageAnalysisHistory}
           />
         );
+      case 'aicommandcenter':
+        return <AICommandCenter />;
       default:
         return <Dashboard scenarios={scenarios} insights={insights} trainingMetrics={trainingMetrics} historyCount={scenarioHistory.length} imageAnalysisHistory={imageAnalysisHistory} />;
     }
