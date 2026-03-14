@@ -25,10 +25,15 @@ interface EnhancedDisasterMapProps {
   cycloneRisk: number;
 }
 
-export default function EnhancedDisasterMap({
+interface EnhancedDisasterMapProps {
+  earthquakeRisk: number;
+  cycloneRisk: number;
+}
+
+export const EnhancedDisasterMap: React.FC<EnhancedDisasterMapProps> = ({
   earthquakeRisk,
   cycloneRisk,
-}: EnhancedDisasterMapProps) {
+}) => {
   const updateZoneRisks = () => {
     return DISASTER_ZONES.map(zone => ({
       ...zone,
@@ -206,4 +211,4 @@ export default function EnhancedDisasterMap({
       </div>
     </div>
   );
-}
+};

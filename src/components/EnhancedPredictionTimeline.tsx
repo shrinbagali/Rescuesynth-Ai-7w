@@ -1,16 +1,16 @@
 import React from 'react';
 import { TrendingUp, TrendingDown, Minus } from 'lucide-react';
-import { Prediction } from '../lib/disaster-detection';
+import { Prediction } from '../../lib/disaster-detection';
 
 interface PredictionTimelineProps {
   predictions: Prediction[];
   currentScore: number;
 }
 
-export default function EnhancedPredictionTimeline({
+export const EnhancedPredictionTimeline: React.FC<PredictionTimelineProps> = ({
   predictions,
   currentScore,
-}: PredictionTimelineProps) {
+}) => {
   const getTrendIcon = (current: number, predicted: number) => {
     const diff = predicted - current;
     if (diff > 5) return <TrendingUp className="text-red-500" size={18} />;
@@ -94,4 +94,4 @@ export default function EnhancedPredictionTimeline({
       </div>
     </div>
   );
-}
+};

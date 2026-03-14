@@ -26,7 +26,7 @@ interface AnalyticsDashboardProps {
   data: DataPoint[];
 }
 
-export default function AnalyticsDashboard({ data }: AnalyticsDashboardProps) {
+export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ data }) => {
   const displayData = useMemo(() => {
     return data.slice(-12); // Show last 12 data points
   }, [data]);
@@ -187,4 +187,4 @@ export default function AnalyticsDashboard({ data }: AnalyticsDashboardProps) {
       </div>
     </div>
   );
-}
+};

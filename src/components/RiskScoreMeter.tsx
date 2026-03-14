@@ -8,12 +8,12 @@ interface RiskScoreMeterProps {
   cycloneScore: number;
 }
 
-export default function RiskScoreMeter({
+export const RiskScoreMeter: React.FC<RiskScoreMeterProps> = ({
   score,
   riskLevel,
   earthquakeScore,
   cycloneScore,
-}: RiskScoreMeterProps) {
+}) => {
   const getRiskColor = (level: string) => {
     switch (level) {
       case 'Critical':
@@ -142,4 +142,4 @@ export default function RiskScoreMeter({
       </div>
     </div>
   );
-}
+};

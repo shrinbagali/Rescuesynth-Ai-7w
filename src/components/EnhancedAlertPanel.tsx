@@ -1,16 +1,16 @@
 import React from 'react';
 import { AlertTriangle, AlertCircle, Wind, Zap, X } from 'lucide-react';
-import { DualDetectionResult } from '../lib/disaster-detection';
+import { DualDetectionResult } from '../../lib/disaster-detection';
 
 interface EnhancedAlertPanelProps {
   detectionResult: DualDetectionResult;
   onDismiss?: (type: string) => void;
 }
 
-export default function EnhancedAlertPanel({
+export const EnhancedAlertPanel: React.FC<EnhancedAlertPanelProps> = ({
   detectionResult,
   onDismiss,
-}: EnhancedAlertPanelProps) {
+}) => {
   const { earthquake, cyclone, activeAlert, riskScoring } = detectionResult;
 
   if (activeAlert === 'none') {
@@ -145,4 +145,4 @@ export default function EnhancedAlertPanel({
       </div>
     </div>
   );
-}
+};

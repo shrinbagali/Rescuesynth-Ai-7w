@@ -1,15 +1,15 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { Play, Pause, RotateCcw, Download, Zap, Wind, Moon, Sun } from 'lucide-react';
 import { EnvironmentalReading, memoizedDetect, DualDetectionResult } from '../../lib/disaster-detection';
-import RealTimeMonitoringDual from '../components/RealTimeMonitoringDual';
-import DualDetectionDisplay from '../components/DualDetectionDisplay';
-import DisasterChartsComponent from '../components/DisasterChartsComponent';
-import DisasterMapComponent from '../components/DisasterMapComponent';
-import RiskScoreMeter from '../components/RiskScoreMeter';
-import EnhancedPredictionTimeline from '../components/EnhancedPredictionTimeline';
-import EnhancedAlertPanel from '../components/EnhancedAlertPanel';
-import EnhancedDisasterMap from '../components/EnhancedDisasterMap';
-import AnalyticsDashboard from '../components/AnalyticsDashboard';
+import { RealTimeMonitoringDual } from '../components/RealTimeMonitoringDual';
+import { DualDetectionDisplay } from '../components/DualDetectionDisplay';
+import { DisasterChartsComponent } from '../components/DisasterChartsComponent';
+import { DisasterMapComponent } from '../components/DisasterMapComponent';
+import { RiskScoreMeter } from '../components/RiskScoreMeter';
+import { EnhancedPredictionTimeline } from '../components/EnhancedPredictionTimeline';
+import { EnhancedAlertPanel } from '../components/EnhancedAlertPanel';
+import { EnhancedDisasterMap } from '../components/EnhancedDisasterMap';
+import { AnalyticsDashboard } from '../components/AnalyticsDashboard';
 
 export default function DualDisasterDetection() {
   const [isMonitoring, setIsMonitoring] = useState(true);
