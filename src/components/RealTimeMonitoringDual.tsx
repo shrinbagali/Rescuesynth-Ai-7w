@@ -1,5 +1,5 @@
 import React from 'react';
-import { EnvironmentalReading } from '../../lib/disaster-detection';
+import { EnvironmentalReading } from '../utils/disaster-detection';
 import { Zap, Droplets, Wind, Gauge, Thermometer, Eye } from 'lucide-react';
 
 interface RealTimeMonitoringDualProps {

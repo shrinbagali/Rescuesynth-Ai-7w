@@ -1,6 +1,6 @@
 import React from 'react';
 import { TrendingUp, TrendingDown, Minus } from 'lucide-react';
-import { Prediction } from '../../lib/disaster-detection';
+import { Prediction } from '../utils/disaster-detection';
 
 interface PredictionTimelineProps {
   predictions: Prediction[];

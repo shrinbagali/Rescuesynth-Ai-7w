@@ -1,5 +1,5 @@
 import React from 'react';
-import { DualDetectionResult } from '../../lib/disaster-detection';
+import { DualDetectionResult } from '../utils/disaster-detection';
 
 interface DisasterMapComponentProps {
   detectionResult: DualDetectionResult;

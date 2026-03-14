@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { LineChart, Line, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from 'recharts';
-import { EnvironmentalReading } from '../../lib/disaster-detection';
+import { EnvironmentalReading } from '../utils/disaster-detection';
 
 interface DisasterChartsComponentProps {
   readings: EnvironmentalReading[];

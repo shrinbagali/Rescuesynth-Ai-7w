@@ -1,6 +1,6 @@
 import React from 'react';
 import { AlertTriangle, AlertCircle, Wind, Zap, X } from 'lucide-react';
-import { DualDetectionResult } from '../../lib/disaster-detection';
+import { DualDetectionResult } from '../utils/disaster-detection';
 
 interface EnhancedAlertPanelProps {
   detectionResult: DualDetectionResult;
