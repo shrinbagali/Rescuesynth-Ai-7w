@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { Play, Pause, RotateCcw, Download, Zap, Wind, Moon, Sun } from 'lucide-react';
-import { EnvironmentalReading, memoizedDetect, DualDetectionResult } from '../../lib/disaster-detection';
+import { EnvironmentalReading, memoizedDetect, DualDetectionResult } from '../utils/disaster-detection';
 import { RealTimeMonitoringDual } from '../components/RealTimeMonitoringDual';
 import { DualDetectionDisplay } from '../components/DualDetectionDisplay';
 import { DisasterChartsComponent } from '../components/DisasterChartsComponent';
