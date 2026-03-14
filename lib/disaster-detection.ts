@@ -34,10 +34,28 @@ export interface CycloneDetection {
   triggeredBy: string[];
 }
 
+export interface Prediction {
+  timeframe: '+2h' | '+6h' | '+12h';
+  riskScore: number;
+  expectedMagnitude?: number;
+  expectedWindSpeed?: number;
+  description: string;
+}
+
+export interface RiskScoring {
+  overallScore: number; // 0-100
+  earthquakeScore: number; // 0-100
+  cycloneScore: number; // 0-100
+  riskLevel: 'Low' | 'Moderate' | 'High' | 'Critical';
+  predictions: Prediction[];
+  aiExplanation: string;
+}
+
 export interface DualDetectionResult {
   earthquake: EarthquakeDetection;
   cyclone: CycloneDetection;
   activeAlert: 'earthquake' | 'cyclone' | 'both' | 'none';
+  riskScoring: RiskScoring;
   timestamp: Date;
 }
 
@@ -160,11 +178,132 @@ export const detectCyclone = (reading: EnvironmentalReading): CycloneDetection =
 };
 
 /**
- * Combined dual disaster detection
+ * Calculate AI risk score (0-100) based on environmental parameters
+ */
+const calculateRiskScore = (reading: EnvironmentalReading, earthquake: EarthquakeDetection, cyclone: CycloneDetection): number => {
+  let score = 0;
+
+  // Earthquake component (0-50 points)
+  if (earthquake.detected) {
+    const magScore = Math.min(50, (reading.magnitude / 9) * 50);
+    const accelScore = Math.min(10, (reading.groundAcceleration / 1000) * 10);
+    score += Math.max(magScore, accelScore);
+  }
+
+  // Cyclone component (0-50 points)
+  if (cyclone.detected) {
+    const windScore = Math.min(50, (reading.windSpeed / 300) * 50);
+    const pressureScore = Math.min(10, ((1050 - reading.atmosphericPressure) / 150) * 10);
+    const rainfallScore = Math.min(5, (reading.rainfall / 500) * 5);
+    score += Math.max(windScore, pressureScore) + rainfallScore;
+  }
+
+  // Cap at 100
+  return Math.min(100, score);
+};
+
+/**
+ * Calculate individual disaster scores
+ */
+const calculateDisasterScores = (reading: EnvironmentalReading): { earthquakeScore: number; cycloneScore: number } => {
+  const earthquakeScore = Math.min(100, (reading.magnitude / 9) * 100);
+  const cycloneScore = Math.min(100, (reading.windSpeed / 300) * 100);
+  return { earthquakeScore, cycloneScore };
+};
+
+/**
+ * Determine risk level from score
+ */
+const getRiskLevelFromScore = (score: number): 'Low' | 'Moderate' | 'High' | 'Critical' => {
+  if (score >= 75) return 'Critical';
+  if (score >= 50) return 'High';
+  if (score >= 25) return 'Moderate';
+  return 'Low';
+};
+
+/**
+ * Generate AI-style explanation for current state
+ */
+const generateAIExplanation = (
+  reading: EnvironmentalReading,
+  earthquake: EarthquakeDetection,
+  cyclone: CycloneDetection,
+  riskScore: number
+): string => {
+  const riskLevel = getRiskLevelFromScore(riskScore);
+  
+  if (riskScore < 25) {
+    return 'Environmental conditions stable. No significant disaster threats detected. Routine monitoring continues.';
+  }
+
+  let explanation = `Current risk assessment: ${riskLevel.toUpperCase()}. `;
+
+  if (earthquake.detected) {
+    explanation += `Seismic activity detected at magnitude ${reading.magnitude.toFixed(1)} with ${earthquake.riskLevel} risk. `;
+  }
+
+  if (cyclone.detected) {
+    explanation += `Cyclonic system detected with wind speeds at ${reading.windSpeed.toFixed(0)} km/h and ${cyclone.riskLevel} risk. `;
+  }
+
+  explanation += 'Enhanced monitoring and preparedness protocols recommended.';
+
+  return explanation;
+};
+
+/**
+ * Generate prediction timeline for next 2h, 6h, 12h
+ */
+const generatePredictions = (reading: EnvironmentalReading, riskScore: number): Prediction[] => {
+  const predictions: Prediction[] = [];
+  
+  // 2-hour prediction
+  predictions.push({
+    timeframe: '+2h',
+    riskScore: Math.min(100, riskScore + (Math.random() * 10 - 5)),
+    expectedMagnitude: reading.magnitude + (Math.random() * 0.5 - 0.25),
+    expectedWindSpeed: reading.windSpeed + (Math.random() * 5 - 2.5),
+    description: riskScore > 40 ? 'Conditions may intensify slightly' : 'Stable conditions expected',
+  });
+
+  // 6-hour prediction
+  predictions.push({
+    timeframe: '+6h',
+    riskScore: Math.min(100, riskScore + (Math.random() * 20 - 10)),
+    expectedMagnitude: reading.magnitude + (Math.random() * 1 - 0.5),
+    expectedWindSpeed: reading.windSpeed + (Math.random() * 15 - 7.5),
+    description: riskScore > 50 ? 'Risk may continue to rise' : 'Gradual improvement expected',
+  });
+
+  // 12-hour prediction
+  predictions.push({
+    timeframe: '+12h',
+    riskScore: Math.max(0, riskScore + (Math.random() * 30 - 15)),
+    expectedMagnitude: reading.magnitude + (Math.random() * 1.5 - 0.75),
+    expectedWindSpeed: reading.windSpeed + (Math.random() * 25 - 12.5),
+    description: riskScore > 50 ? 'Conditions may persist or evolve' : 'Return to baseline conditions',
+  });
+
+  return predictions;
+};
+
+/**
+ * Combined dual disaster detection with risk scoring
  */
 export const detectDisasters = (reading: EnvironmentalReading): DualDetectionResult => {
   const earthquake = detectEarthquake(reading);
   const cyclone = detectCyclone(reading);
+
+  // Calculate risk scores
+  const overallScore = calculateRiskScore(reading, earthquake, cyclone);
+  const { earthquakeScore, cycloneScore } = calculateDisasterScores(reading);
+  const riskLevel = getRiskLevelFromScore(overallScore);
+
+  // Generate predictions
+  const predictions = generatePredictions(reading, overallScore);
+
+  // Generate AI explanation
+  const aiExplanation = generateAIExplanation(reading, earthquake, cyclone, overallScore);
 
   // Determine which alert is active (prioritize by severity)
   let activeAlert: 'earthquake' | 'cyclone' | 'both' | 'none' = 'none';
@@ -180,6 +319,14 @@ export const detectDisasters = (reading: EnvironmentalReading): DualDetectionRes
     earthquake,
     cyclone,
     activeAlert,
+    riskScoring: {
+      overallScore: Math.round(overallScore * 10) / 10,
+      earthquakeScore: Math.round(earthquakeScore * 10) / 10,
+      cycloneScore: Math.round(cycloneScore * 10) / 10,
+      riskLevel,
+      predictions,
+      aiExplanation,
+    },
     timestamp: reading.timestamp,
   };
 };
@@ -227,13 +374,26 @@ const generateCycloneExplanation = (
  */
 let lastReading: EnvironmentalReading | null = null;
 let lastResult: DualDetectionResult | null = null;
+let detectionCache = new Map<string, DualDetectionResult>();
 
 export const memoizedDetect = (reading: EnvironmentalReading): DualDetectionResult => {
-  if (lastReading && JSON.stringify(lastReading) === JSON.stringify(reading)) {
-    return lastResult!;
+  // Create simple cache key from critical parameters
+  const cacheKey = `${reading.magnitude.toFixed(2)}-${reading.windSpeed.toFixed(2)}-${reading.atmosphericPressure.toFixed(2)}`;
+  
+  // Check if we have this exact reading cached
+  if (detectionCache.has(cacheKey)) {
+    return detectionCache.get(cacheKey)!;
   }
 
   const result = detectDisasters(reading);
+  
+  // Store in cache (limit cache size to 100 entries)
+  if (detectionCache.size > 100) {
+    const firstKey = detectionCache.keys().next().value;
+    detectionCache.delete(firstKey);
+  }
+  
+  detectionCache.set(cacheKey, result);
   lastReading = reading;
   lastResult = result;
   return result;
