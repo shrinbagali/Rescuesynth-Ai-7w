@@ -239,7 +239,7 @@ export default function DualDisasterDetection() {
         </div>
 
         {/* Active Alerts Section */}
-        {!dismissedAlerts.has('alerts') && detectionResult.activeAlert !== 'none' && (
+        {detectionResult && !dismissedAlerts.has('alerts') && detectionResult.activeAlert !== 'none' && (
           <div className="bg-red-900/20 border-2 border-red-800 rounded-lg p-4">
             <EnhancedAlertPanel
               detectionResult={detectionResult}
@@ -249,84 +249,88 @@ export default function DualDisasterDetection() {
         )}
 
         {/* Dual Disaster Detection Module */}
-        <div className="bg-gray-800/50 rounded-lg p-6 border border-gray-700">
-          <h2 className="text-2xl font-bold mb-6">Dual Disaster Detection</h2>
-          
-          {/* Risk Score Display */}
-          <div className="mb-6">
-            <RiskScoreMeter
-              score={detectionResult.riskScoring.overallScore}
-              riskLevel={detectionResult.riskScoring.riskLevel}
-              earthquakeScore={detectionResult.riskScoring.earthquakeScore}
-              cycloneScore={detectionResult.riskScoring.cycloneScore}
-            />
-          </div>
+        {detectionResult && currentReading && (
+          <>
+            <div className="bg-gray-800/50 rounded-lg p-6 border border-gray-700">
+              <h2 className="text-2xl font-bold mb-6">Dual Disaster Detection</h2>
+              
+              {/* Risk Score Display */}
+              <div className="mb-6">
+                <RiskScoreMeter
+                  score={detectionResult.riskScoring.overallScore}
+                  riskLevel={detectionResult.riskScoring.riskLevel}
+                  earthquakeScore={detectionResult.riskScoring.earthquakeScore}
+                  cycloneScore={detectionResult.riskScoring.cycloneScore}
+                />
+              </div>
 
-          {/* Environmental Monitoring */}
-          <div className="mb-6">
-            <h3 className="text-lg font-semibold mb-4">Real-Time Environmental Parameters</h3>
-            <RealTimeMonitoringDual reading={currentReading} isMonitoring={isMonitoring} />
-          </div>
+              {/* Environmental Monitoring */}
+              <div className="mb-6">
+                <h3 className="text-lg font-semibold mb-4">Real-Time Environmental Parameters</h3>
+                <RealTimeMonitoringDual reading={currentReading} isMonitoring={isMonitoring} />
+              </div>
 
-          {/* Detection Cards */}
-          <div>
-            <DualDetectionDisplay detectionResult={detectionResult} />
-          </div>
-        </div>
-
-        {/* Global Disaster Map */}
-        <div className="bg-gray-800/50 rounded-lg p-6 border border-gray-700">
-          <h2 className="text-2xl font-bold mb-6">Global Disaster Map</h2>
-          <EnhancedDisasterMap
-            earthquakeRisk={detectionResult.riskScoring.earthquakeScore}
-            cycloneRisk={detectionResult.riskScoring.cycloneScore}
-          />
-        </div>
-
-        {/* Prediction Timeline */}
-        <div className="bg-gray-800/50 rounded-lg p-6 border border-gray-700">
-          <h2 className="text-2xl font-bold mb-6">Prediction Timeline</h2>
-          <EnhancedPredictionTimeline
-            predictions={detectionResult.riskScoring.predictions}
-            currentScore={detectionResult.riskScoring.overallScore}
-          />
-        </div>
-
-        {/* Analytics & Charts */}
-        <div className="bg-gray-800/50 rounded-lg p-6 border border-gray-700">
-          <h2 className="text-2xl font-bold mb-6">Analytics & Trends</h2>
-          <AnalyticsDashboard data={analyticsData} />
-        </div>
-
-        {/* System Status */}
-        <div className="bg-gray-800/50 rounded-lg p-6 border border-gray-700">
-          <h3 className="text-lg font-bold mb-4">System Status</h3>
-          <div className="space-y-3 text-sm">
-            <div className="flex justify-between py-2 border-b border-gray-700">
-              <span className="text-gray-400">Total Readings</span>
-              <span className="font-semibold">{readings.length}</span>
+              {/* Detection Cards */}
+              <div>
+                <DualDetectionDisplay detectionResult={detectionResult} />
+              </div>
             </div>
-            <div className="flex justify-between py-2 border-b border-gray-700">
-              <span className="text-gray-400">Active Alerts</span>
-              <span className="font-semibold">{detectionResult.activeAlert !== 'none' ? 1 : 0}</span>
+
+            {/* Global Disaster Map */}
+            <div className="bg-gray-800/50 rounded-lg p-6 border border-gray-700">
+              <h2 className="text-2xl font-bold mb-6">Global Disaster Map</h2>
+              <EnhancedDisasterMap
+                earthquakeRisk={detectionResult.riskScoring.earthquakeScore}
+                cycloneRisk={detectionResult.riskScoring.cycloneScore}
+              />
             </div>
-            <div className="flex justify-between py-2 border-b border-gray-700">
-              <span className="text-gray-400">Risk Level</span>
-              <span className={`font-semibold ${
-                detectionResult.riskScoring.riskLevel === 'Critical' ? 'text-red-400' :
-                detectionResult.riskScoring.riskLevel === 'High' ? 'text-orange-400' :
-                detectionResult.riskScoring.riskLevel === 'Moderate' ? 'text-yellow-400' :
-                'text-green-400'
-              }`}>
-                {detectionResult.riskScoring.riskLevel}
-              </span>
+
+            {/* Prediction Timeline */}
+            <div className="bg-gray-800/50 rounded-lg p-6 border border-gray-700">
+              <h2 className="text-2xl font-bold mb-6">Prediction Timeline</h2>
+              <EnhancedPredictionTimeline
+                predictions={detectionResult.riskScoring.predictions}
+                currentScore={detectionResult.riskScoring.overallScore}
+              />
             </div>
-            <div className="flex justify-between py-2">
-              <span className="text-gray-400">Monitoring</span>
-              <span className="font-semibold">{isMonitoring ? 'Active' : 'Paused'}</span>
+
+            {/* Analytics & Charts */}
+            <div className="bg-gray-800/50 rounded-lg p-6 border border-gray-700">
+              <h2 className="text-2xl font-bold mb-6">Analytics & Trends</h2>
+              <AnalyticsDashboard data={analyticsData} />
             </div>
-          </div>
-        </div>
+
+            {/* System Status */}
+            <div className="bg-gray-800/50 rounded-lg p-6 border border-gray-700">
+              <h3 className="text-lg font-bold mb-4">System Status</h3>
+              <div className="space-y-3 text-sm">
+                <div className="flex justify-between py-2 border-b border-gray-700">
+                  <span className="text-gray-400">Total Readings</span>
+                  <span className="font-semibold">{readings.length}</span>
+                </div>
+                <div className="flex justify-between py-2 border-b border-gray-700">
+                  <span className="text-gray-400">Active Alerts</span>
+                  <span className="font-semibold">{detectionResult.activeAlert !== 'none' ? 1 : 0}</span>
+                </div>
+                <div className="flex justify-between py-2 border-b border-gray-700">
+                  <span className="text-gray-400">Risk Level</span>
+                  <span className={`font-semibold ${
+                    detectionResult.riskScoring.riskLevel === 'Critical' ? 'text-red-400' :
+                    detectionResult.riskScoring.riskLevel === 'High' ? 'text-orange-400' :
+                    detectionResult.riskScoring.riskLevel === 'Moderate' ? 'text-yellow-400' :
+                    'text-green-400'
+                  }`}>
+                    {detectionResult.riskScoring.riskLevel}
+                  </span>
+                </div>
+                <div className="flex justify-between py-2">
+                  <span className="text-gray-400">Monitoring</span>
+                  <span className="font-semibold">{isMonitoring ? 'Active' : 'Paused'}</span>
+                </div>
+              </div>
+            </div>
+          </>
+        )}
       </div>
     </div>
   );
