@@ -13,12 +13,25 @@ import { EnhancedDisasterMap } from '../components/EnhancedDisasterMap';
 import { AnalyticsDashboard } from '../components/AnalyticsDashboard';
 import { NotificationPanel } from '../components/NotificationPanel';
 
+// Initialize with default reading and detection result
+const getInitialReading = (): EnvironmentalReading => ({
+  magnitude: 4.5,
+  groundAcceleration: 50,
+  epicenterDepth: 50,
+  windSpeed: 30,
+  atmosphericPressure: 1013,
+  rainfall: 0,
+  humidity: 60,
+  temperature: 20,
+  timestamp: new Date(),
+});
+
 export default function DualDisasterDetection() {
   const [isMonitoring, setIsMonitoring] = useState(false);
   const [isSimulating, setIsSimulating] = useState(false);
-  const [readings, setReadings] = useState<EnvironmentalReading[]>([]);
-  const [currentReading, setCurrentReading] = useState<EnvironmentalReading | null>(null);
-  const [detectionResult, setDetectionResult] = useState<DualDetectionResult | null>(null);
+  const [readings, setReadings] = useState<EnvironmentalReading[]>([getInitialReading()]);
+  const [currentReading, setCurrentReading] = useState<EnvironmentalReading>(getInitialReading());
+  const [detectionResult, setDetectionResult] = useState<DualDetectionResult | null>(() => memoizedDetect(getInitialReading()));
   const [testMode, setTestMode] = useState<'normal' | 'earthquake' | 'cyclone' | 'both' | null>(null);
   const [darkMode, setDarkMode] = useState(true);
   const [dismissedAlerts, setDismissedAlerts] = useState<Set<string>>(new Set());
@@ -166,18 +179,7 @@ export default function DualDisasterDetection() {
     }));
   }, [readings]);
 
-  if (!currentReading || !detectionResult) {
-    return (
-      <div className={`flex items-center justify-center min-h-[400px] ${darkMode ? 'dark' : ''}`}>
-        <div className="text-center">
-          <p className="text-gray-600 dark:text-gray-300 mb-4">Initializing monitoring system...</p>
-          <div className="animate-pulse">
-            <div className="w-12 h-12 bg-blue-200 dark:bg-blue-900/30 rounded-lg mx-auto"></div>
-          </div>
-        </div>
-      </div>
-    );
-  }
+
 
   return (
     <div className="bg-gradient-to-b from-gray-950 to-gray-900 text-white min-h-screen">
@@ -318,7 +320,7 @@ export default function DualDisasterDetection() {
         </div>
 
         {/* Active Alerts Section */}
-        {detectionResult && !dismissedAlerts.has('alerts') && detectionResult.activeAlert !== 'none' && (
+        {!dismissedAlerts.has('alerts') && detectionResult && detectionResult.activeAlert !== 'none' && (
           <div className="bg-red-900/20 border-2 border-red-800 rounded-lg p-4">
             <EnhancedAlertPanel
               detectionResult={detectionResult}
@@ -328,9 +330,8 @@ export default function DualDisasterDetection() {
         )}
 
         {/* Dual Disaster Detection Module */}
-        {detectionResult && currentReading && (
-          <>
-            <div className="bg-gray-800/50 rounded-lg p-6 border border-gray-700">
+        <div className="space-y-6">
+          <div className="bg-gray-800/50 rounded-lg p-6 border border-gray-700">
               <h2 className="text-2xl font-bold mb-6">Dual Disaster Detection</h2>
               
               {/* Risk Score Display */}
@@ -408,8 +409,7 @@ export default function DualDisasterDetection() {
                 </div>
               </div>
             </div>
-          </>
-        )}
+        </div>
 
         {/* Notification Panel */}
         {notifications.length > 0 && (
