@@ -135,108 +135,112 @@ export default function DualDisasterDetection() {
   }
 
   return (
-    <div className={`${darkMode ? 'dark' : ''} bg-white dark:bg-gray-900 text-gray-900 dark:text-white transition-colors`}>
-      <div className="space-y-8 p-6">
+    <div className="bg-gradient-to-b from-gray-950 to-gray-900 text-white min-h-screen">
+      <div className="flex flex-col gap-8 w-full max-w-7xl mx-auto px-4 py-8">
         {/* Header with Theme Toggle */}
         <div className="flex items-start justify-between">
           <div>
             <h1 className="text-4xl font-bold mb-2">AI Disaster Command Platform</h1>
-            <p className="text-gray-600 dark:text-gray-400">Real-time earthquake and cyclone monitoring with predictive AI analysis</p>
+            <p className="text-gray-400">Real-time earthquake and cyclone monitoring with predictive AI analysis</p>
           </div>
           <button
             onClick={() => setDarkMode(!darkMode)}
-            className="p-2 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+            className="p-2 rounded-lg bg-gray-800 hover:bg-gray-700 transition-colors"
           >
             {darkMode ? <Sun size={20} /> : <Moon size={20} />}
           </button>
         </div>
 
         {/* Control Panel */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 bg-gray-50 dark:bg-gray-800 rounded-lg p-6 border border-gray-200 dark:border-gray-700">
-          {/* Playback Controls */}
-          <div className="flex flex-wrap gap-3">
-            <button
-              onClick={() => setIsMonitoring(!isMonitoring)}
-              className="flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors font-medium"
-            >
-              {isMonitoring ? (
-                <>
-                  <Pause size={18} />
-                  Pause
-                </>
-              ) : (
-                <>
-                  <Play size={18} />
-                  Resume
-                </>
-              )}
-            </button>
-
-            <button
-              onClick={handleReset}
-              className="flex items-center gap-2 px-4 py-2 rounded-lg bg-gray-600 text-white hover:bg-gray-700 transition-colors font-medium"
-            >
-              <RotateCcw size={18} />
-              Reset
-            </button>
-
-            <button
-              onClick={handleDownload}
-              disabled={readings.length === 0}
-              className="flex items-center gap-2 px-4 py-2 rounded-lg bg-green-600 text-white hover:bg-green-700 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              <Download size={18} />
-              Export CSV
-            </button>
-          </div>
-
-          {/* Test Mode Selection */}
-          <div className="flex flex-wrap gap-2">
-            {['normal', 'earthquake', 'cyclone', 'both'].map((mode) => (
+        <div className="bg-gray-800/50 rounded-lg p-6 border border-gray-700">
+          <div className="space-y-4">
+            <div className="flex flex-wrap gap-3">
               <button
-                key={mode}
-                onClick={() => setTestMode(mode as any)}
-                className={`px-3 py-2 rounded text-sm font-medium transition-colors ${
-                  testMode === mode
-                    ? 'bg-purple-600 text-white'
-                    : 'bg-gray-300 dark:bg-gray-700 text-gray-900 dark:text-white hover:bg-gray-400 dark:hover:bg-gray-600'
-                }`}
+                onClick={() => setIsMonitoring(!isMonitoring)}
+                className="flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors font-medium"
               >
-                {mode === 'both' ? 'Both Events' : mode.charAt(0).toUpperCase() + mode.slice(1)}
+                {isMonitoring ? (
+                  <>
+                    <Pause size={18} />
+                    Pause
+                  </>
+                ) : (
+                  <>
+                    <Play size={18} />
+                    Resume
+                  </>
+                )}
               </button>
-            ))}
+
+              <button
+                onClick={handleReset}
+                className="flex items-center gap-2 px-4 py-2 rounded-lg bg-gray-600 text-white hover:bg-gray-700 transition-colors font-medium"
+              >
+                <RotateCcw size={18} />
+                Reset
+              </button>
+
+              <button
+                onClick={handleDownload}
+                disabled={readings.length === 0}
+                className="flex items-center gap-2 px-4 py-2 rounded-lg bg-green-600 text-white hover:bg-green-700 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <Download size={18} />
+                Export CSV
+              </button>
+            </div>
+
+            <div className="flex flex-wrap gap-2">
+              {['normal', 'earthquake', 'cyclone', 'both'].map((mode) => (
+                <button
+                  key={mode}
+                  onClick={() => setTestMode(mode as any)}
+                  className={`px-3 py-2 rounded text-sm font-medium transition-colors ${
+                    testMode === mode
+                      ? 'bg-purple-600 text-white'
+                      : 'bg-gray-700 text-gray-200 hover:bg-gray-600'
+                  }`}
+                >
+                  {mode === 'both' ? 'Both Events' : mode.charAt(0).toUpperCase() + mode.slice(1)}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
 
         {/* Statistics Bar */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-          <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4">
-            <div className="text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1">Readings Collected</div>
-            <div className="text-2xl font-bold">{readings.length}</div>
-          </div>
-          <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4">
-            <div className="text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1">Monitoring Status</div>
-            <div className="text-lg font-bold text-green-600 dark:text-green-400">
-              {isMonitoring ? 'Active' : 'Paused'}
-            </div>
-          </div>
-          <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4">
-            <div className="text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1">Current Magnitude</div>
-            <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">
-              {currentReading.magnitude.toFixed(2)}
-            </div>
-          </div>
-          <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4">
-            <div className="text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1">Wind Speed</div>
-            <div className="text-2xl font-bold text-cyan-600 dark:text-cyan-400">
-              {currentReading.windSpeed.toFixed(0)} km/h
+        <div className="grid grid-cols-1 gap-4">
+          <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <div className="text-xs font-semibold text-gray-400 mb-1">Readings Collected</div>
+                <div className="text-2xl font-bold">{readings.length}</div>
+              </div>
+              <div>
+                <div className="text-xs font-semibold text-gray-400 mb-1">Monitoring Status</div>
+                <div className="text-lg font-bold text-green-400">
+                  {isMonitoring ? 'Active' : 'Paused'}
+                </div>
+              </div>
+              <div>
+                <div className="text-xs font-semibold text-gray-400 mb-1">Magnitude</div>
+                <div className="text-2xl font-bold text-blue-400">
+                  {currentReading.magnitude.toFixed(2)}
+                </div>
+              </div>
+              <div>
+                <div className="text-xs font-semibold text-gray-400 mb-1">Wind Speed</div>
+                <div className="text-2xl font-bold text-cyan-400">
+                  {currentReading.windSpeed.toFixed(0)} km/h
+                </div>
+              </div>
             </div>
           </div>
         </div>
 
         {/* Active Alerts Section */}
         {!dismissedAlerts.has('alerts') && detectionResult.activeAlert !== 'none' && (
-          <div className="bg-red-50 dark:bg-red-900/20 border-2 border-red-300 dark:border-red-800 rounded-lg p-4">
+          <div className="bg-red-900/20 border-2 border-red-800 rounded-lg p-4">
             <EnhancedAlertPanel
               detectionResult={detectionResult}
               onDismiss={handleDismissAlert}
@@ -244,83 +248,84 @@ export default function DualDisasterDetection() {
           </div>
         )}
 
-        {/* Main Content Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Left Column: Risk Meter and Timeline */}
-          <div className="lg:col-span-1 space-y-6">
-            <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
-              <RiskScoreMeter
-                score={detectionResult.riskScoring.overallScore}
-                riskLevel={detectionResult.riskScoring.riskLevel}
-                earthquakeScore={detectionResult.riskScoring.earthquakeScore}
-                cycloneScore={detectionResult.riskScoring.cycloneScore}
-              />
-            </div>
+        {/* Dual Disaster Detection Module */}
+        <div className="bg-gray-800/50 rounded-lg p-6 border border-gray-700">
+          <h2 className="text-2xl font-bold mb-6">Dual Disaster Detection</h2>
+          
+          {/* Risk Score Display */}
+          <div className="mb-6">
+            <RiskScoreMeter
+              score={detectionResult.riskScoring.overallScore}
+              riskLevel={detectionResult.riskScoring.riskLevel}
+              earthquakeScore={detectionResult.riskScoring.earthquakeScore}
+              cycloneScore={detectionResult.riskScoring.cycloneScore}
+            />
           </div>
 
-          {/* Center Column: Monitoring and Detection */}
-          <div className="lg:col-span-2 space-y-6">
-            <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
-              <h3 className="text-lg font-bold mb-4">Real-Time Environmental Monitoring</h3>
-              <RealTimeMonitoringDual reading={currentReading} />
-            </div>
+          {/* Environmental Monitoring */}
+          <div className="mb-6">
+            <h3 className="text-lg font-semibold mb-4">Real-Time Environmental Parameters</h3>
+            <RealTimeMonitoringDual reading={currentReading} isMonitoring={isMonitoring} />
+          </div>
 
-            <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
-              <DualDetectionDisplay detectionResult={detectionResult} />
-            </div>
+          {/* Detection Cards */}
+          <div>
+            <DualDetectionDisplay detectionResult={detectionResult} />
           </div>
         </div>
 
+        {/* Global Disaster Map */}
+        <div className="bg-gray-800/50 rounded-lg p-6 border border-gray-700">
+          <h2 className="text-2xl font-bold mb-6">Global Disaster Map</h2>
+          <EnhancedDisasterMap
+            earthquakeRisk={detectionResult.riskScoring.earthquakeScore}
+            cycloneRisk={detectionResult.riskScoring.cycloneScore}
+          />
+        </div>
+
         {/* Prediction Timeline */}
-        <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
+        <div className="bg-gray-800/50 rounded-lg p-6 border border-gray-700">
+          <h2 className="text-2xl font-bold mb-6">Prediction Timeline</h2>
           <EnhancedPredictionTimeline
             predictions={detectionResult.riskScoring.predictions}
             currentScore={detectionResult.riskScoring.overallScore}
           />
         </div>
 
-        {/* Map and Analytics Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
-            <EnhancedDisasterMap
-              earthquakeRisk={detectionResult.riskScoring.earthquakeScore}
-              cycloneRisk={detectionResult.riskScoring.cycloneScore}
-            />
-          </div>
-
-          <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
-            <div className="text-lg font-bold mb-4">System Status</div>
-            <div className="space-y-3 text-sm">
-              <div className="flex justify-between py-2 border-b border-gray-200 dark:border-gray-700">
-                <span className="text-gray-600 dark:text-gray-400">Total Readings</span>
-                <span className="font-semibold">{readings.length}</span>
-              </div>
-              <div className="flex justify-between py-2 border-b border-gray-200 dark:border-gray-700">
-                <span className="text-gray-600 dark:text-gray-400">Active Alerts</span>
-                <span className="font-semibold">{detectionResult.activeAlert !== 'none' ? 1 : 0}</span>
-              </div>
-              <div className="flex justify-between py-2 border-b border-gray-200 dark:border-gray-700">
-                <span className="text-gray-600 dark:text-gray-400">Risk Level</span>
-                <span className={`font-semibold ${
-                  detectionResult.riskScoring.riskLevel === 'Critical' ? 'text-red-600 dark:text-red-400' :
-                  detectionResult.riskScoring.riskLevel === 'High' ? 'text-orange-600 dark:text-orange-400' :
-                  detectionResult.riskScoring.riskLevel === 'Moderate' ? 'text-yellow-600 dark:text-yellow-400' :
-                  'text-green-600 dark:text-green-400'
-                }`}>
-                  {detectionResult.riskScoring.riskLevel}
-                </span>
-              </div>
-              <div className="flex justify-between py-2">
-                <span className="text-gray-600 dark:text-gray-400">Monitoring</span>
-                <span className="font-semibold">{isMonitoring ? 'Active' : 'Paused'}</span>
-              </div>
-            </div>
-          </div>
+        {/* Analytics & Charts */}
+        <div className="bg-gray-800/50 rounded-lg p-6 border border-gray-700">
+          <h2 className="text-2xl font-bold mb-6">Analytics & Trends</h2>
+          <AnalyticsDashboard data={analyticsData} />
         </div>
 
-        {/* Analytics Dashboard */}
-        <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
-          <AnalyticsDashboard data={analyticsData} />
+        {/* System Status */}
+        <div className="bg-gray-800/50 rounded-lg p-6 border border-gray-700">
+          <h3 className="text-lg font-bold mb-4">System Status</h3>
+          <div className="space-y-3 text-sm">
+            <div className="flex justify-between py-2 border-b border-gray-700">
+              <span className="text-gray-400">Total Readings</span>
+              <span className="font-semibold">{readings.length}</span>
+            </div>
+            <div className="flex justify-between py-2 border-b border-gray-700">
+              <span className="text-gray-400">Active Alerts</span>
+              <span className="font-semibold">{detectionResult.activeAlert !== 'none' ? 1 : 0}</span>
+            </div>
+            <div className="flex justify-between py-2 border-b border-gray-700">
+              <span className="text-gray-400">Risk Level</span>
+              <span className={`font-semibold ${
+                detectionResult.riskScoring.riskLevel === 'Critical' ? 'text-red-400' :
+                detectionResult.riskScoring.riskLevel === 'High' ? 'text-orange-400' :
+                detectionResult.riskScoring.riskLevel === 'Moderate' ? 'text-yellow-400' :
+                'text-green-400'
+              }`}>
+                {detectionResult.riskScoring.riskLevel}
+              </span>
+            </div>
+            <div className="flex justify-between py-2">
+              <span className="text-gray-400">Monitoring</span>
+              <span className="font-semibold">{isMonitoring ? 'Active' : 'Paused'}</span>
+            </div>
+          </div>
         </div>
       </div>
     </div>
