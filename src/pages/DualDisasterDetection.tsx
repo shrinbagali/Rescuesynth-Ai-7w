@@ -25,6 +25,11 @@ export default function DualDisasterDetection() {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [lastNotificationScore, setLastNotificationScore] = useState<number>(0);
 
+  // Add notification handler first (before useEffect)
+  const handleAddNotification = useCallback((notif: Notification) => {
+    setNotifications((prev) => [notif, ...prev.slice(0, 19)]);
+  }, []);
+
   // Generate realistic environmental data
   const generateEnvironmentalReading = useCallback((override?: Partial<EnvironmentalReading>): EnvironmentalReading => {
     const baseReading = {
@@ -108,10 +113,6 @@ export default function DualDisasterDetection() {
 
     return () => clearInterval(interval);
   }, [isMonitoring, isSimulating, testMode, generateEnvironmentalReading, lastNotificationScore, handleAddNotification]);
-
-  const handleAddNotification = useCallback((notif: Notification) => {
-    setNotifications((prev) => [notif, ...prev.slice(0, 19)]);
-  }, []);
 
   const handleDismissNotification = (id: string) => {
     setNotifications((prev) => prev.filter((n) => n.id !== id));
