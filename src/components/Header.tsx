@@ -1,8 +1,11 @@
 import { Bell, Search, User } from 'lucide-react';
 import { Page } from '../types';
+import { Notification } from '../utils/notifications';
 
 interface HeaderProps {
   currentPage: Page;
+  notifications?: Notification[];
+  onNotificationClick?: () => void;
 }
 
 const pageTitles: Record<Page, string> = {
@@ -17,7 +20,7 @@ const pageTitles: Record<Page, string> = {
   history: 'Scenario History',
 };
 
-export default function Header({ currentPage }: HeaderProps) {
+export default function Header({ currentPage, notifications = [], onNotificationClick }: HeaderProps) {
   const currentDate = new Date().toLocaleDateString('en-US', {
     weekday: 'long',
     year: 'numeric',
@@ -42,9 +45,19 @@ export default function Header({ currentPage }: HeaderProps) {
           />
         </div>
         
-        <button className="relative p-2 rounded-lg bg-slate-800 hover:bg-slate-700 transition-colors">
-          <Bell size={20} className="text-slate-400" />
-          <span className="absolute top-1 right-1 w-2 h-2 bg-neon-red rounded-full"></span>
+        <button 
+          onClick={onNotificationClick}
+          className="relative p-2 rounded-lg bg-slate-800 hover:bg-slate-700 transition-colors"
+          title={notifications.length > 0 ? `${notifications.length} notifications` : 'No notifications'}
+        >
+          <Bell size={20} className={notifications.length > 0 ? 'text-neon-red animate-pulse' : 'text-slate-400'} />
+          {notifications.length > 0 && (
+            <span className="absolute top-1 right-1 w-5 h-5 bg-neon-red rounded-full flex items-center justify-center">
+              <span className="text-white text-xs font-bold">
+                {notifications.length > 9 ? '9+' : notifications.length}
+              </span>
+            </span>
+          )}
         </button>
         
         <div className="flex items-center gap-3 pl-4 border-l border-slate-700">

@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { Play, Pause, RotateCcw, Download, Zap, Wind, Moon, Sun } from 'lucide-react';
+import { Play, Pause, RotateCcw, Download, Zap, Wind, Moon, Sun, Bell } from 'lucide-react';
 import { EnvironmentalReading, memoizedDetect, DualDetectionResult } from '../utils/disaster-detection';
+import { Notification, createNotification, RISK_THRESHOLDS, getNotificationType } from '../utils/notifications';
 import { RealTimeMonitoringDual } from '../components/RealTimeMonitoringDual';
 import { DualDetectionDisplay } from '../components/DualDetectionDisplay';
 import { DisasterChartsComponent } from '../components/DisasterChartsComponent';
@@ -10,15 +11,19 @@ import { EnhancedPredictionTimeline } from '../components/EnhancedPredictionTime
 import { EnhancedAlertPanel } from '../components/EnhancedAlertPanel';
 import { EnhancedDisasterMap } from '../components/EnhancedDisasterMap';
 import { AnalyticsDashboard } from '../components/AnalyticsDashboard';
+import { NotificationPanel } from '../components/NotificationPanel';
 
 export default function DualDisasterDetection() {
-  const [isMonitoring, setIsMonitoring] = useState(true);
+  const [isMonitoring, setIsMonitoring] = useState(false);
+  const [isSimulating, setIsSimulating] = useState(false);
   const [readings, setReadings] = useState<EnvironmentalReading[]>([]);
   const [currentReading, setCurrentReading] = useState<EnvironmentalReading | null>(null);
   const [detectionResult, setDetectionResult] = useState<DualDetectionResult | null>(null);
   const [testMode, setTestMode] = useState<'normal' | 'earthquake' | 'cyclone' | 'both' | null>(null);
   const [darkMode, setDarkMode] = useState(true);
   const [dismissedAlerts, setDismissedAlerts] = useState<Set<string>>(new Set());
+  const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [lastNotificationScore, setLastNotificationScore] = useState<number>(0);
 
   // Generate realistic environmental data
   const generateEnvironmentalReading = useCallback((override?: Partial<EnvironmentalReading>): EnvironmentalReading => {
@@ -57,9 +62,9 @@ export default function DualDisasterDetection() {
     };
   }, [testMode]);
 
-  // Monitor updates every 8 seconds
+  // Monitor updates every 8 seconds (or faster in simulation mode)
   useEffect(() => {
-    if (!isMonitoring) return;
+    if (!isMonitoring && !isSimulating) return;
 
     const interval = setInterval(() => {
       const newReading = generateEnvironmentalReading();
@@ -69,16 +74,52 @@ export default function DualDisasterDetection() {
       // Run detection
       const result = memoizedDetect(newReading);
       setDetectionResult(result);
-    }, 8000);
+
+      // Check for notification triggers
+      const riskScore = result.riskScoring.overallScore;
+      const crossedThreshold =
+        (lastNotificationScore < RISK_THRESHOLDS.CRITICAL && riskScore >= RISK_THRESHOLDS.CRITICAL) ||
+        (lastNotificationScore < RISK_THRESHOLDS.HIGH && riskScore >= RISK_THRESHOLDS.HIGH && lastNotificationScore < RISK_THRESHOLDS.CRITICAL);
+
+      if (crossedThreshold) {
+        const disasterType = result.activeAlert === 'earthquake' ? 'Earthquake' : result.activeAlert === 'cyclone' ? 'Cyclone' : 'Dual Event';
+        const notifType = getNotificationType(riskScore);
+        const message = `Risk score reached ${riskScore.toFixed(0)} - ${result.riskScoring.riskLevel}`;
+        
+        const notif = createNotification(
+          `${disasterType} Alert`,
+          message,
+          notifType,
+          disasterType,
+          'Global',
+          result.riskScoring.riskLevel
+        );
+        handleAddNotification(notif);
+        setLastNotificationScore(riskScore);
+      }
+    }, isSimulating ? 2000 : 8000); // Faster updates in simulation mode
 
     // Initial reading
     const initialReading = generateEnvironmentalReading();
     setCurrentReading(initialReading);
     setReadings([initialReading]);
-    setDetectionResult(memoizedDetect(initialReading));
+    const initialResult = memoizedDetect(initialReading);
+    setDetectionResult(initialResult);
 
     return () => clearInterval(interval);
-  }, [isMonitoring, testMode, generateEnvironmentalReading]);
+  }, [isMonitoring, isSimulating, testMode, generateEnvironmentalReading, lastNotificationScore, handleAddNotification]);
+
+  const handleAddNotification = useCallback((notif: Notification) => {
+    setNotifications((prev) => [notif, ...prev.slice(0, 19)]);
+  }, []);
+
+  const handleDismissNotification = (id: string) => {
+    setNotifications((prev) => prev.filter((n) => n.id !== id));
+  };
+
+  const handleClearAllNotifications = () => {
+    setNotifications([]);
+  };
 
   const handleReset = () => {
     setReadings([]);
@@ -86,6 +127,9 @@ export default function DualDisasterDetection() {
     setDetectionResult(null);
     setTestMode(null);
     setDismissedAlerts(new Set());
+    setNotifications([]);
+    setIsMonitoring(false);
+    setIsSimulating(false);
   };
 
   const handleDownload = () => {
@@ -137,18 +181,31 @@ export default function DualDisasterDetection() {
   return (
     <div className="bg-gradient-to-b from-gray-950 to-gray-900 text-white min-h-screen">
       <div className="flex flex-col gap-8 w-full max-w-7xl mx-auto px-4 py-8">
-        {/* Header with Theme Toggle */}
+        {/* Header with Theme Toggle and Notification Bell */}
         <div className="flex items-start justify-between">
           <div>
             <h1 className="text-4xl font-bold mb-2">AI Disaster Command Platform</h1>
             <p className="text-gray-400">Real-time earthquake and cyclone monitoring with predictive AI analysis</p>
           </div>
-          <button
-            onClick={() => setDarkMode(!darkMode)}
-            className="p-2 rounded-lg bg-gray-800 hover:bg-gray-700 transition-colors"
-          >
-            {darkMode ? <Sun size={20} /> : <Moon size={20} />}
-          </button>
+          <div className="flex gap-2">
+            <button
+              className="relative p-2 rounded-lg bg-gray-800 hover:bg-gray-700 transition-colors"
+              title="Notifications"
+            >
+              <Bell size={20} />
+              {notifications.length > 0 && (
+                <span className="absolute top-0 right-0 bg-red-500 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">
+                  {notifications.length > 9 ? '9+' : notifications.length}
+                </span>
+              )}
+            </button>
+            <button
+              onClick={() => setDarkMode(!darkMode)}
+              className="p-2 rounded-lg bg-gray-800 hover:bg-gray-700 transition-colors"
+            >
+              {darkMode ? <Sun size={20} /> : <Moon size={20} />}
+            </button>
+          </div>
         </div>
 
         {/* Control Panel */}
@@ -156,18 +213,39 @@ export default function DualDisasterDetection() {
           <div className="space-y-4">
             <div className="flex flex-wrap gap-3">
               <button
+                onClick={() => setIsSimulating(!isSimulating)}
+                className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors font-medium ${
+                  isSimulating
+                    ? 'bg-green-600 text-white hover:bg-green-700'
+                    : 'bg-violet-600 text-white hover:bg-violet-700'
+                }`}
+              >
+                {isSimulating ? (
+                  <>
+                    <Pause size={18} />
+                    Stop Simulation
+                  </>
+                ) : (
+                  <>
+                    <Play size={18} />
+                    Start Simulation
+                  </>
+                )}
+              </button>
+
+              <button
                 onClick={() => setIsMonitoring(!isMonitoring)}
                 className="flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors font-medium"
               >
                 {isMonitoring ? (
                   <>
                     <Pause size={18} />
-                    Pause
+                    Pause Monitoring
                   </>
                 ) : (
                   <>
                     <Play size={18} />
-                    Resume
+                    Resume Monitoring
                   </>
                 )}
               </button>
@@ -330,6 +408,16 @@ export default function DualDisasterDetection() {
               </div>
             </div>
           </>
+        )}
+
+        {/* Notification Panel */}
+        {notifications.length > 0 && (
+          <NotificationPanel
+            notifications={notifications}
+            onDismiss={handleDismissNotification}
+            onClearAll={handleClearAllNotifications}
+            unreadCount={notifications.filter((n) => !n.read).length}
+          />
         )}
       </div>
     </div>
